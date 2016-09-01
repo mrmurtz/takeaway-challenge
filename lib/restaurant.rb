@@ -1,17 +1,18 @@
 #Understands a customers order
 require_relative 'menu'
 require_relative 'sms'
+require_relative 'order'
 
 
 class Restaurant
 
-  attr_reader :basket, :total, :sms
+  attr_reader :basket, :total, :sms, :order
 
-  def initialize(menu = Menu.new, sms = Sms.new)
+  def initialize(menu = Menu.new, sms_class = Sms, order_class = Order)
     @menu = menu
-    @basket = {}
-    @total = 0
-    @sms = sms
+    # @basket = {}
+    # @total = 0
+    # @sms = sms
   end
 
   def print_menu
@@ -23,6 +24,10 @@ class Restaurant
     @menu.dishes.each do |dish, price|
       puts "#{dish.ljust(10)} £#{price}".rjust(20)
     end
+  end
+
+  def new_order
+    @order = order_class.new
   end
 
   def add_order(item, quantity=1)
@@ -43,6 +48,6 @@ class Restaurant
     time = Time.new
     add_hour = time + 1*60*60
     delivery_time = add_hour.strftime("%H:%M")
-    @sms.send_confirmation_sms(delivery_time)
+    sms_class.new.send_confirmation_sms(delivery_time)
   end
 end
